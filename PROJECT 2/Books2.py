@@ -1,4 +1,13 @@
 from fastapi import FastAPI, Body
+from pydantic import BaseModel
+
+#pydantic comes pre-installed with our fastapi installation.
+
+'''
+pydantic is the framework that allows us to do validation on our data and base model is what we're
+going to be using for our model, which is the object coming in to be able to validate the variables
+within the object itself.
+'''
 
 book_app = FastAPI()
 
@@ -17,6 +26,13 @@ class Book:
         self.description = description
         self.rating = rating
 
+class BookRequest(BaseModel):
+    book_id: int
+    title: str
+    author: str
+    description: str
+    rating: float
+
 BOOKS = [
     Book(1, 'Computer Science', 'Harry Brooks', 'Absolutely worth it!', 5),
 Book(2, 'Crazy Techniques', 'Joe Root', 'Should read it once.', 4),
@@ -30,8 +46,17 @@ Book(600, 'Swimmers', 'Michael Phelps', 'Amazing', 2)
 async def read_books():
     return BOOKS
 
+'''
 @book_app.post('/create_newBook')
 async def create_book(book_request=Body()):
     BOOKS.append(book_request)
+'''
 
 
+@book_app.post('/create_newBook')
+async def create_book(book_request: BookRequest):     #book request type of book request
+    #print(type(book_request))
+    #BOOKS.append(book_request)
+    new_book = Book(**book_request.model_dump())    #converting the request to Book object
+    print(type(new_book))
+    BOOKS.append(new_book)
