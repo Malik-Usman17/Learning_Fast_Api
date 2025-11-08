@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./todos.db"
 
-'''Well, we want to say check same thread of type false.And now by default, SQLite will only allow one thread to 
+'''Well, we want to say check same thread of type false. And now by default, SQLite will only allow one thread to 
 communicate with it.Assuming that each thread will handle an independent request. This is to prevent any kind of 
 accident sharing of the same connection for different kind of requests. But in fast API it's very normal to have
 more than one thread that could interact with the database at the same time. So we just need to make sure SQLite
