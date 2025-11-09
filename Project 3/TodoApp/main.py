@@ -6,6 +6,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from models import Todos
 from pydantic import BaseModel, Field
+from routers import auth
 
 app = FastAPI()
 
@@ -17,6 +18,8 @@ models.Base.metadata.create_all(bind=engine)
 file to be able to create a new database that has a new table of todos with all of the columns that we laid out in 
 our models.py file. So this happens all behind the scenes. On how to create a new database for our fast API application 
 using SQLite.'''
+
+app.include_router(auth.router)
 
 def get_db():
     db = SessionLocal()
@@ -40,10 +43,10 @@ class TodoDataRequest(BaseModel):
     priority: int = Field(gt=0, lt=6)
     complete: bool
 
+
 @app.get("/")
 async def read_all(db: db_dependency):
     return db.query(Todos).all()
-
 '''Depends is dependency injection. Dependency injection means in programming that we need to do something before 
 we execute what we're trying to execute. And that will allow us to be able to do some kind of code behind the scenes 
 and then inject the dependencies that function relies on.'''
@@ -88,5 +91,14 @@ async def update_todo(
     todo_data_model.complete = todo_request.complete
 
     db.add(todo_data_model)
+    db.commit()
+
+
+@app.delete("/todos/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_todo(db: db_dependency, todo_id: int = Path(gt=0)):
+    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+    if todo_model is None:
+        raise HTTPException(status_code=404, detail='Todo data not found.')
+    db.query(Todos).filter(Todos.id == todo_id).delete()
     db.commit()
 
