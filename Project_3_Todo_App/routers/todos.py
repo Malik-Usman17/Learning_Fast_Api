@@ -7,6 +7,7 @@ from models import Todos
 from pydantic import BaseModel, Field
 
 
+#router = APIRouter(prefix="/todos", tags=["Todos"])
 router = APIRouter()
 
 
