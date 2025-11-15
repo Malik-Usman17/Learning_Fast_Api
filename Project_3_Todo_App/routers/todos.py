@@ -5,7 +5,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from models import Todos
 from pydantic import BaseModel, Field
-
+from .auth import get_current_user
 
 #router = APIRouter(prefix="/todos", tags=["Todos"])
 router = APIRouter()
@@ -22,9 +22,8 @@ The code following the yield statement is executed after the response has been d
 quicker because we can fetch information from a database, return it to the client and then close off the connection to
 the database after. And it's extremely safe and pretty much required in most applications to open up a database 
 connection only for when you're using the database and then close the connection after.'''
-
-
 db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 class TodoDataRequest(BaseModel):
@@ -34,17 +33,21 @@ class TodoDataRequest(BaseModel):
     complete: bool
 
 
-@router.get("/")
-async def read_all(db: db_dependency):
-    return db.query(Todos).all()
+@router.get("/", status_code=status.HTTP_200_OK)
+async def read_all(user: user_dependency, db: db_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication failed!!!")
+    return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 '''Depends is dependency injection. Dependency injection means in programming that we need to do something before 
 we execute what we're trying to execute. And that will allow us to be able to do some kind of code behind the scenes 
 and then inject the dependencies that function relies on.'''
 
 
 @router.get("/todos/{requested_id}", status_code=status.HTTP_200_OK)
-async def read_todo(db: db_dependency, requested_id: int = Path(gt=0)):
-    todo_model = db.query(Todos).filter(Todos.id == requested_id).first()
+async def read_todo(user: user_dependency, db: db_dependency, requested_id: int = Path(gt=0)):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication failed!!!")
+    todo_model = db.query(Todos).filter(Todos.id == requested_id).filter(Todos.owner_id == user.get('id')).first()
     if todo_model is not None:
         return todo_model
     raise HTTPException(status_code=404, detail='Data not found!!')
@@ -55,8 +58,10 @@ every single record in the database to see if the IDs match.'''
 
 
 @router.post("/todos", status_code=status.HTTP_201_CREATED)
-async def create_todo(db: db_dependency, todo_request: TodoDataRequest):
-    todo_model = Todos(**todo_request.model_dump())
+async def create_todo(user: user_dependency, db: db_dependency, todo_request: TodoDataRequest):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed!!!!')
+    todo_model = Todos(**todo_request.model_dump(), owner_id=user.get('id'))
     db.add(todo_model)
     db.commit()
 '''And then we're going to say DB dot add to do, which makes the session know that, hey, we're about to add something 
@@ -67,11 +72,15 @@ database ready while committing means flushing it all and actually doing the tra
 
 @router.put("/todos/{req_todo_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_todo(
+        user: user_dependency,
         db: db_dependency,
         todo_request: TodoDataRequest,
         req_todo_id: int = Path(gt=0)
 ):
-    todo_data_model = db.query(Todos).filter(Todos.id == req_todo_id).first()
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication Failed!!!!")
+    todo_data_model = db.query(Todos).filter(Todos.id == req_todo_id)\
+                       .filter(Todos.owner_id == user.get('id')).first()
     if todo_data_model is None:
         raise HTTPException(status_code=404, detail='Todo Data not found!!')
 
@@ -85,7 +94,9 @@ async def update_todo(
 
 
 @router.delete("/todos/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todo(db: db_dependency, todo_id: int = Path(gt=0)):
+async def delete_todo(user: user_dependency, db: db_dependency, todo_id: int = Path(gt=0)):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Delete endpoint Authentication Failed!!!!")
     todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
     if todo_model is None:
         raise HTTPException(status_code=404, detail='Todo data not found.')
