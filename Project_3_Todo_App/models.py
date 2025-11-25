@@ -3,6 +3,7 @@ from database import Base
 
 class Users(Base):
     __tablename__ = 'users'
+
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True)
     username = Column(String, unique=True)
@@ -29,3 +30,4 @@ it's just going to increase performance just slightly.'''
 
 
 
+#$2b$12$MKA.V4bjHUsY2YbGU0zUCutBN4yor3IWHz6EqtpOU32ojcxY70Ec.
