@@ -4,7 +4,6 @@ from database import SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import Session
 from models import Todos
-from pydantic import BaseModel, Field
 from .auth import get_current_user
 
 

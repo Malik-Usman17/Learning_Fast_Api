@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import models
 from database import engine
-from routers import auth, todos, admin
+from routers import auth, todos, admin, users
 
 app = FastAPI()
 
@@ -17,11 +17,20 @@ using SQLite.'''
 app.include_router(auth.router)
 app.include_router(todos.router)
 app.include_router(admin.router)
+app.include_router(users.router)
 
 
 #Username:malik12
-#Pwd: malik123
+#Pwd: malik0
 
 
 #Username:Test_User1
-#Pwd: User1234
+#Pwd: malik12
+
+
+
+#$2b$12$MKA.V4bjHUsY2YbGU0zUCutBN4yor3IWHz6EqtpOU32ojcxY70Ec.
+
+
+
+'''serial in Postgres means it's going to be like our primary key. It's going to be an ID that auto increments.'''
