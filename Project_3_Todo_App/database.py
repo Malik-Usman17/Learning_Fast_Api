@@ -3,7 +3,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"
+#SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"
+#SQLALCHEMY_DATABASE_URL = "postgresql://postgres:test1234!@localhost/TodosApplicationDatabase"   postgresql
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:Malik123@127.0.0.1:3306/TodoAppDatabase"    #mysql
 
 '''Well, we want to say check same thread of type false. And now by default, SQLite will only allow one thread to 
 communicate with it.Assuming that each thread will handle an independent request. This is to prevent any kind of 
@@ -11,8 +13,10 @@ accident sharing of the same connection for different kind of requests. But in f
 more than one thread that could interact with the database at the same time. So we just need to make sure SQLite
 knows that hey, we don't want to be checking the same thread all the time because there could be multiple threads 
 happening to our SQLite database.'''
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
+#engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+#connect_args={"check_same_thread": False} we use this for sqlite only
 
 '''So what we're saying is we want the session local, which we're going to be using in our application.
 You'll see when we use session local, we want to bind to the engine that we just created and we want to 
@@ -27,3 +31,8 @@ really just means is we're going to be creating database tables and then here in
 going to be able to create an object of our database which will then be able to interact with the tables that we
 create in the future.'''
 Base = declarative_base()
+
+
+
+
+'you can delete your todosapp.db file, if you are not working with sqlite'

@@ -34,3 +34,18 @@ app.include_router(users.router)
 
 
 '''serial in Postgres means it's going to be like our primary key. It's going to be an ID that auto increments.'''
+
+
+'''ronaldo_1
+User123
+
+xabi12
+xabi1234
+
+For Mysql users
+mysql1
+user123
+
+user2
+user0011
+'''
