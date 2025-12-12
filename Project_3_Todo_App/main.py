@@ -19,7 +19,9 @@ app.include_router(todos.router)
 app.include_router(admin.router)
 app.include_router(users.router)
 
+#alembic init alembictest
 
+#messi07    messi123         $2b$12$7GPnMSp.G.Xw1C3dZcTgueMWnabm4FFCKXkTCs1eM/n/VUooq.wgq
 #Username:malik12
 #Pwd: malik0
 
