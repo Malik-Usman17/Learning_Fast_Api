@@ -3,9 +3,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
-#SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"
 #SQLALCHEMY_DATABASE_URL = "postgresql://postgres:test1234!@localhost/TodosApplicationDatabase"   postgresql
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:Malik123@127.0.0.1:3306/TodoAppDatabase"    #mysql
+#SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:Malik123@127.0.0.1:3306/TodoAppDatabase"    #mysql
 
 '''Well, we want to say check same thread of type false. And now by default, SQLite will only allow one thread to 
 communicate with it.Assuming that each thread will handle an independent request. This is to prevent any kind of 
